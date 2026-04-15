@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# deps check fr
+check_deps() {
+  local deps=("gum" "jq" "curl" "sqlite3")
+  local missing=()
+
+  for dep in "${deps[@]}"; do
+    if ! commmand -v "$dep" &> /dev/null; then
+        missing+=("$dep")
+    fi
+  done
+
+  if [ ${#missing[@]} -ne 0 ]; then
+    echo "Missing Dependencies: ${missing[*]}"
+    echo ""
+    echo "Install with:"
+    echo " brew install gum jq sqlite3 curl # macOS"
+    exit 1
+  fi
+}
+
+check_deps
+
+# Source Libs (To Be Created Nxt)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LIB_DIR="$SCRIPT_DIR/../lib"
+
+# Main Men-u
+main_menu() {
+  gum style \
+      --border double \
+      --align center \
+      --width 50 \
+      --margin "1 2" \
+      --padding "2 4" \
+      'LAPITS' 'API Test-ting & Mock Server'
+
+  CHOICE=$(gum choose \
+      "New Req" \
+      "Collections" \
+      "Environments" \
+      "History" \
+      "Mock Server" \
+      "Setting" \
+      "EXIT")
+  
+  case "$CHOICE" in
+      "New Req") new_request ;;
+      "Collections") collection_menu ;;
+      "Environments") environments_menu ;;
+      "History") history_menu ;;
+      "Mock Server") mock_server_menu ;;
+      "Settings") settings_menu ;;
+      "EXIT") exit 0 ;;
+  esac
+}
+
+# Just Empaty Func's
+new_request() {
+  echo "Coming soon: Request builder"
+  gum input --placeholder "Press entor to continue..."
+  main_menu 
+}
+
+collection_menu() {
+  echo "Coming soon: Collections"
+  gum input --placeholder "Press entor to continue..."
+  main_menu 
+}
+
+environments_menu() {
+  echo "Coming soon: Environments"
+  gum input --placeholder "Press entor to continue..."
+  main_menu 
+}
+
+history_menu() {
+  echo "Coming soon: History Menu"
+  gum input --placeholder "Press entor to continue..."
+  main_menu 
+}
+
+mock_server_menu() {
+  echo "Coming soon: Mock Server Menu"
+  gum input --placeholder "Press entor to continue..."
+  main_menu
+}
+
+settings_menu() {
+  echo "Coming soon: Settings"
+  gum input --placeholder "Press entor to continue..."
+  main_menu 
+}
+
+main_menu 
