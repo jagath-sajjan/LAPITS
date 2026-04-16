@@ -8,7 +8,7 @@ check_deps() {
   local missing=()
 
   for dep in "${deps[@]}"; do
-    if ! commmand -v "$dep" &> /dev/null; then
+    if ! command -v "$dep" > /dev/null 2>&1; then
         missing+=("$dep")
     fi
   done
@@ -18,6 +18,7 @@ check_deps() {
     echo ""
     echo "Install with:"
     echo " brew install gum jq sqlite3 curl # macOS"
+    echo " sudo apt install jq curl sqlite3 # Debian/Ubuntu"
     exit 1
   fi
 }
@@ -26,10 +27,30 @@ check_deps
 
 # Source Libs (To Be Created Nxt)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LIB_DIR="$SCRIPT_DIR/../lib"
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+LIB_DIR="$ROOT_DIR/lib"
+DATA_DIR="$ROOT_DIR/data"
+CONFIG_DIR="$ROOT_DIR/config"
+
+mkdir -p \
+  "$DATA_DIR/collections" \
+  "$DATA_DIR/environments" \
+  "$DATA_DIR/history" \
+  "$DATA_DIR/tmp" \
+  "$DATA_DIR/templates"
+
+# Shellcheck's source=/dev/null
+source "$LIB_DIR/core/variables.sh"
+source "$LIB_DIR/core/auth.sh"
+source "$LIB_DIR/core/http.sh"
+source "$LIB_DIR/core/curl_import.sh"
+source "$LIB_DIR/ui/request_builder.sh"
 
 # Main Men-u
 main_menu() {
+  while true; do
+    clear 
+
   gum style \
       --border double \
       --align center \
@@ -37,7 +58,8 @@ main_menu() {
       --margin "1 2" \
       --padding "2 4" \
       'LAPITS' 'API Test-ting & Mock Server'
-
+  
+  local CHOICE
   CHOICE=$(gum choose \
       "New Req" \
       "Collections" \
@@ -55,44 +77,37 @@ main_menu() {
       "Mock Server") mock_server_menu ;;
       "Settings") settings_menu ;;
       "EXIT") exit 0 ;;
-  esac
+    esac
+  done 
 }
 
 # Just Empaty Func's
 new_request() {
-  echo "Coming soon: Request builder"
-  gum input --placeholder "Press entor to continue..."
-  main_menu 
+  lapits_request_builder
 }
 
 collection_menu() {
-  echo "Coming soon: Collections"
-  gum input --placeholder "Press entor to continue..."
-  main_menu 
+  gum style --border rounded --padding "1 2" "Coming Soon: Collections"
+  gum input --placeholder "Press entor to continue..." >/dev/null  
 }
 
 environments_menu() {
-  echo "Coming soon: Environments"
-  gum input --placeholder "Press entor to continue..."
-  main_menu 
+  lapits_environment_menu
 }
 
 history_menu() {
-  echo "Coming soon: History Menu"
-  gum input --placeholder "Press entor to continue..."
-  main_menu 
+  gum style --border rounded --padding "1 2" "Coming Soon: History"
+  gum input --placeholder "Press entor to continue..." >/dev/null  
 }
 
 mock_server_menu() {
-  echo "Coming soon: Mock Server Menu"
-  gum input --placeholder "Press entor to continue..."
-  main_menu
+  gum style --border rounded --padding "1 2" "Coming Soon: Mock Server"
+  gum input --placeholder "Press entor to continue..." >/dev/null
 }
 
 settings_menu() {
-  echo "Coming soon: Settings"
-  gum input --placeholder "Press entor to continue..."
-  main_menu 
+  gum style --border rounded --padding "1 2" "Coming Soon: Settings"
+  gum input --placeholder "Press entor to continue..." >/dev/null
 }
 
-main_menu 
+main_menu
